@@ -2,6 +2,7 @@ from django.forms import ModelForm
 from .models import *
 from django import forms
 from django.contrib.auth.forms import AuthenticationForm
+from .models import Announcement
 
 
 class UserLoginForm(AuthenticationForm):
@@ -70,3 +71,13 @@ class SectionForm(ModelForm):
         model = Section
         labels = {'num_class_in_week': 'Total classes in a week'}
         fields = ['section_id', 'department', 'num_class_in_week']
+
+
+class AnnouncementForm(forms.ModelForm):
+    class Meta:
+        model = Announcement
+        fields = ['title', 'content', 'is_active']
+        widgets = {
+            'content': forms.Textarea(attrs={'rows': 5}),
+            'is_active': forms.CheckboxInput(attrs={'class': 'custom-control-input'})
+        }

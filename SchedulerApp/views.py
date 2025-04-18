@@ -6,6 +6,9 @@ from .models import *
 from .forms import *
 from collections import defaultdict
 import random
+from .models import Announcement
+from .forms import AnnouncementForm  
+from django.shortcuts import render, redirect, get_object_or_404
 
 POPULATION_SIZE = 30
 NUMB_OF_ELITE_SCHEDULES = 2
@@ -467,6 +470,40 @@ def sectionDelete(request, pk):
         sec.delete()
         return redirect('sectionEdit')
 
+
+
+def announcements(request):
+    announcements = Announcement.objects.filter(is_active=True).order_by('-created_at')
+    return render(request, 'announcements.html', {'announcements': announcements})
+
+@login_required
+def announcementAdd(request):
+    if request.method == 'POST':
+        form = AnnouncementForm(request.POST)
+        if form.is_valid():
+            announcement = form.save(commit=False)
+            announcement.created_by = request.user
+            announcement.save()
+            return redirect('announcements')
+    else:
+        form = AnnouncementForm()
+    return render(request, 'announcementAdd.html', {'form': form})
+
+
+def announcementDetail(request, pk):
+    announcement = get_object_or_404(Announcement, pk=pk)
+    return render(request, 'announcementDetail.html', {'announcement': announcement})
+
+@login_required
+def announcementEdit(request):
+    announcements = Announcement.objects.all().order_by('-created_at')
+    return render(request, 'announcementEdit.html', {'announcements': announcements})
+
+@login_required
+def announcementDelete(request, pk):
+    announcement = get_object_or_404(Announcement, pk=pk)
+    announcement.delete()
+    return redirect('announcementEdit')
 
 
 
