@@ -1,0 +1,90 @@
+{% extends 'base.html' %} 
+{% block content %}  
+<div class="container announcements-container py-4">
+  <div class="card shadow-sm">
+    <div class="card-header bg-primary text-white p-3 d-flex justify-content-between align-items-center">
+      <h3 class="mb-0 fw-bold">Announcements</h3>
+      {% if user.is_staff %}
+      <div>
+        <a href="{% url 'announcementAdd' %}" class="btn btn-success btn-sm">
+          <i class="fa fa-plus"></i> Add New
+        </a>
+        <a href="{% url 'announcementEdit' %}" class="btn btn-info btn-sm ms-2">
+          <i class="fa fa-edit"></i> Edit
+        </a>
+      </div>
+      {% endif %}
+    </div>
+    <div class="card-body p-4">
+      {% if announcements %}
+        <div class="list-group mt-2">
+          {% for announcement in announcements %}
+            <div class="list-group-item list-group-item-action flex-column align-items-start mb-3 border-0 announcement-card">
+              <div class="d-flex w-100 justify-content-between">
+                <h5 class="mb-1 fw-bold text-primary">{{ announcement.title }}</h5>
+                <small class="text-muted"><i class="fa fa-calendar me-1"></i>{{ announcement.created_at|date:"F d, Y" }}</small>
+              </div>
+              <p class="mb-2 mt-2 announcement-content">{{ announcement.content|linebreaks|truncatewords:50 }}</p>
+              <a href="{% url 'announcementDetail' announcement.id %}" class="btn btn-sm btn-outline-primary mt-2">
+                Read More <i class="fa fa-arrow-right ms-1"></i>
+              </a>
+            </div>
+          {% endfor %}
+        </div>
+      {% else %}
+        <div class="alert alert-info d-flex align-items-center p-4">
+          <i class="fa fa-info-circle me-3 fa-lg"></i>
+          <span>No announcements available at this time.</span>
+        </div>
+      {% endif %}
+    </div>
+  </div>
+</div>
+
+<style>
+  .announcements-container {
+    max-width: 900px;
+    margin: 0 auto;
+  }
+  
+  .card-header {
+    border-radius: 8px 8px 0 0;
+  }
+  
+  .announcement-card {
+    border-radius: 8px;
+    box-shadow: 0 3px 10px rgba(0,0,0,0.08);
+    transition: all 0.3s ease;
+    padding: 1.25rem;
+    background-color: #ffffff;
+    margin-bottom: 1rem;
+    border-left: 4px solid #0d6efd !important;
+  }
+  
+  .announcement-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 6px 15px rgba(0,0,0,0.1);
+  }
+  
+  .announcement-content {
+    color: #6c757d;
+    line-height: 1.6;
+  }
+  
+  .btn-outline-primary {
+    border-radius: 20px;
+    padding: 0.25rem 1rem;
+    font-weight: 500;
+    transition: all 0.2s;
+  }
+  
+  .btn-outline-primary:hover {
+    transform: scale(1.05);
+  }
+  
+  .alert-info {
+    border-radius: 8px;
+    border-left: 4px solid #0dcaf0;
+  }
+</style>
+{% endblock %}
