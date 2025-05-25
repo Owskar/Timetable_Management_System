@@ -9,6 +9,7 @@ import random
 from .models import Announcement
 from .forms import AnnouncementForm  
 from django.shortcuts import render, redirect, get_object_or_404
+from django.contrib import messages
 
 POPULATION_SIZE = 30
 NUMB_OF_ELITE_SCHEDULES = 2
@@ -499,13 +500,49 @@ def announcementEdit(request):
     announcements = Announcement.objects.all().order_by('-created_at')
     return render(request, 'announcementEdit.html', {'announcements': announcements})
 
+# @login_required
+# def announcementDelete(request, pk):
+#     print(f"=== DELETE VIEW DEBUG ===")
+#     print(f"Method: {request.method}")
+#     print(f"PK: {pk}")
+#     print(f"User: {request.user}")
+#     print(f"Is staff: {request.user.is_staff}")
+    
+#     announcement = get_object_or_404(Announcement, pk=pk)
+#     print(f"Found announcement: {announcement.title}")
+    
+#     if not request.user.is_staff:
+#         print("User is not staff, redirecting")
+#         return redirect('announcements')
+    
+#     if request.method == 'POST':
+#         print("POST request received, deleting announcement")
+#         announcement.delete()
+#         print("Announcement deleted successfully")
+#         return redirect('announcementEdit')
+#     else:
+#         print(f"Not a POST request (method: {request.method}), redirecting to detail")
+#         return redirect('announcementDetail', pk=pk)
+
+
 @login_required
 def announcementDelete(request, pk):
+    print(f"Delete view called - Method: {request.method}, PK: {pk}")
+    
     announcement = get_object_or_404(Announcement, pk=pk)
-    announcement.delete()
-    return redirect('announcementEdit')
-
-
+    
+    if not request.user.is_staff:
+        messages.error(request, "You don't have permission to delete announcements.")
+        return redirect('announcements')
+    
+    if request.method == 'POST':
+        print(f"Deleting announcement: {announcement.title}")
+        announcement.delete()
+        messages.success(request, f'Announcement "{announcement.title}" was deleted successfully.')
+        return redirect('announcementEdit')
+    else:
+        print("Not a POST request, redirecting to detail")
+        return redirect('announcementDetail', pk=pk)
 
 '''
 Error pages
